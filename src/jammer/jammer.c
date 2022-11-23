@@ -36,7 +36,8 @@ PROCESS_THREAD(jammer, ev, data)
     static int channel = 11;
     NETSTACK_RADIO.on();
     NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 0); //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
-
+    radio_value_t RSSI;
+    
     //Connect to the desired channel
     if(NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, channel) != RADIO_RESULT_OK) 
     {
