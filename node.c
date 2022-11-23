@@ -54,6 +54,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
     }
     static unsigned count = 0;
     static struct etimer et;
+    radio_value_t RSSI;
 
     nullnet_buf = (uint8_t *)&count;
     nullnet_len = sizeof(count);
@@ -62,6 +63,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
     static linkaddr_t mote186 =         {{ 0x34, 0xa3, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Lukas
     static linkaddr_t mote182 =         {{ 0x83, 0xac, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Daniel
     //static linkaddr_t mote118 =         {{ 0x5d, 0xe7, 0x93, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Malthe
+    //static linkaddr_t mote170 =         {{ 0x}}; //Jakob 
 
     etimer_set(&et, SEND_INTERVAL);
     while(1) {
@@ -76,6 +78,12 @@ PROCESS_THREAD(hello_world_process, ev, data)
         NETSTACK_NETWORK.output(&mote182);
 
         count++;
+
+        if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
+        {
+            printf("failed get RSSI value");
+        }
+        printf("RSSI for channel %d = %d \n", channel, RSSI);
         
         etimer_reset(&et);
     }
