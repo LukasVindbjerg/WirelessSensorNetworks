@@ -51,5 +51,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-build/*
+build
 !build/build.xml
+
+*.ihex

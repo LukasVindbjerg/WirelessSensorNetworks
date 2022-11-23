@@ -1,12 +1,19 @@
-CONTIKI_PROJECT = WirelsesSensorNetworks
+CONTIKI_PROJECT = check_channel_rssi
 all: $(CONTIKI_PROJECT)
 
 MAKE_NET = MAKE_NET_NULLNET
 
+ifndef TARGET
+	TARGET=sky
+endif
 
-CONTIKI = ..
-#include $(CONTIKI)/Makefile.include
-#TARGET_LIBFILES = -lm
+ifndef PORT
+	PORT=/dev/ttyUSB0
+endif
+
+
+#CONTIKI = ..
+CONTIKI = /home/user/contiki-ng
 
 
 PLATFORMS_EXCLUDE = nrf52dk
