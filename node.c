@@ -21,7 +21,7 @@
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
-#define SEND_INTERVAL (8 * CLOCK_SECOND)
+#define SEND_INTERVAL (2 * CLOCK_SECOND)
 
 
 /*---------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
         printf("failed channel set");
     }
     static unsigned count = 0;
-    //static struct etimer et;
+    static struct etimer et;
 
     nullnet_buf = (uint8_t *)&count;
     nullnet_len = sizeof(count);
@@ -63,10 +63,10 @@ PROCESS_THREAD(hello_world_process, ev, data)
     static linkaddr_t mote182 =         {{ 0x83, 0xac, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Daniel
     //static linkaddr_t mote118 =         {{ 0x5d, 0xe7, 0x93, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Malthe
 
-    //etimer_set(&et, SEND_INTERVAL);
+    etimer_set(&et, SEND_INTERVAL);
     while(1) {
         //PROCESS_WAIT_EVENT();
-        //PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
         LOG_INFO("Sending %u to ", count);
         LOG_INFO_LLADDR(&mote186); printf(" and ");
         LOG_INFO_LLADDR(&mote182);
@@ -77,7 +77,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
         count++;
         
-        //etimer_reset(&et);
+        etimer_reset(&et);
     }
 
     PROCESS_END();
