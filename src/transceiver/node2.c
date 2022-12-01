@@ -6,7 +6,7 @@
  *         Malthe Tøttrup <201907882@post.au.dk>
  * 
  *         $ make TARGET=sky distclean 
- *         $ make TARGET=sky MOTES=/dev/ttyUSB0 node.upload login
+ *         $ make TARGET=sky MOTES=/dev/ttyUSB0 node1.upload login
  */
 
 #include "contiki.h"
@@ -17,19 +17,23 @@
 #include "net/netstack.h"
 #include <string.h>
 #include "sys/log.h"
+#include "cc2420.h"
+#include "os/storage/cfs/cfs.h"
 
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
 #define SEND_INTERVAL (2 * CLOCK_SECOND)
 
+static int packet_recieved = 0;
+static int change_channel = 0;
 
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
-AUTOSTART_PROCESSES(&hello_world_process);
-/*---------------------------------------------------------------------------*/
+PROCESS(moveing_average_process, "moveing average process");
+AUTOSTART_PROCESSES(&hello_world_process,&moveing_average_process);
 
-static int change_channel = 0;
+/*---------------------------------------------------------------------------*/
 
 void input_callback(const void *data, uint16_t len,
   const linkaddr_t *src, const linkaddr_t *dest)
@@ -37,12 +41,22 @@ void input_callback(const void *data, uint16_t len,
   if(len == sizeof(unsigned)) {
     unsigned count;
     memcpy(&count, data, sizeof(count));
-    LOG_INFO("Received %u from ", count);
-    LOG_INFO_LLADDR(src);
-    LOG_INFO_("\n");
+    //LOG_INFO("Received %u from ", count);
+    //LOG_INFO_LLADDR(src);
+    //LOG_INFO_("\n");
     change_channel = 0;
+    packet_recieved++;
   }
 }
+
+//write to file
+void write_to_file(int value, char *filename){
+  int file = cfs_open(filename, CFS_WRITE);
+  cfs_write(file, (uint8_t *)&value, sizeof(value));
+  cfs_close(file);
+}
+
+
 
 PROCESS_THREAD(hello_world_process, ev, data)
 {   
@@ -57,7 +71,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
     }
     static unsigned count = 0;
     static struct etimer et;
-    radio_value_t RSSI;
+
 
     nullnet_buf = (uint8_t *)&count;
     nullnet_len = sizeof(count);
@@ -73,30 +87,22 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
     
     etimer_set(&et, SEND_INTERVAL);
+
     while(1) {
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-        LOG_INFO("Sending %u to ", count);
-        LOG_INFO_LLADDR(&node1);
-        LOG_INFO_("\n");
-        
-        // NETSTACK_NETWORK.output(&mote186);
-        // NETSTACK_NETWORK.output(&mote182);
+        LOG_INFO("Send/recieved : %u/%u \n ", count, packet_recieved);
+
         NETSTACK_NETWORK.output(&node1);
 
         count++;
         change_channel++;
 
-        if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
-        {
-            printf("failed get RSSI value");
-        }
-        printf("RSSI for channel %d = %d \n", channel, RSSI);
         
         etimer_reset(&et);
-        
+
         if(change_channel >= 5){
           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, 17);
-          printf("changed to channel 17\n");
+          printf("changed to channel 17 because of message shortage\n");
           change_channel = 0;
         }
     }
@@ -104,3 +110,87 @@ PROCESS_THREAD(hello_world_process, ev, data)
     PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
+
+
+
+PROCESS_THREAD(moveing_average_process, ev, data)
+{
+  PROCESS_BEGIN();
+  NETSTACK_RADIO.on();
+  static radio_value_t RSSI;
+  static struct etimer et;
+
+  etimer_set(&et,0.1*CLOCK_SECOND);
+
+  static int mavg_short = 20;
+  static int mavg_long = 100;
+  
+  static int short_average_index = 0;
+  static int short_average_array[20] = {0};
+  static int short_total = 0;
+  static int short_average = 0;
+
+  static int long_average_index = 1;
+  static int long_average_array[100] = {0};
+  static int long_total = 0;
+  static int long_average = 0;
+
+  static int fill = 0;
+  while(fill < mavg_long){
+        if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
+        {
+            printf("failed get RSSI value");
+        }
+        long_average_array[fill] = RSSI;
+        short_average_array[fill%20] = RSSI;
+        fill++;
+  }
+
+  while (1)
+  {
+    
+
+    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+    if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
+        {
+            printf("failed get RSSI value");
+        }
+    
+    long_average_array[long_average_index] = RSSI;
+    for(int i = 0; i < mavg_long; i++){
+      long_total += long_average_array[i];
+    } 
+    long_average = long_total/mavg_long;
+    long_total = 0;
+
+    if(long_average_index == mavg_long){
+      long_average_index = -1;
+    }
+    long_average_index++;
+
+
+    short_average_array[short_average_index] = RSSI;
+    for(int i = 0; i < mavg_short; i++){
+      short_total += short_average_array[i];
+    }
+    short_average = short_total/mavg_short;
+    short_total = 0;
+
+    if(short_average_index == mavg_short){
+      short_average_index = -1;
+    }
+    short_average_index++;
+
+    //printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
+    
+    if( short_average *1.1 > long_average){
+          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, 17);
+          printf("changed to channel 17 because of RSSI\n");
+        
+    }
+    
+    etimer_reset(&et); 
+  }
+  
+  PROCESS_END();
+}

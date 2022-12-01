@@ -15,6 +15,7 @@ endif
 #CONTIKI = ..
 CONTIKI = /home/user/contiki-ng
 
+MODULES += os/services/simple-energest
 
 PLATFORMS_EXCLUDE = nrf52dk
 

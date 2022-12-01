@@ -1,0 +1,209 @@
+[INFO: Main      ] Starting Contiki-NG-release/v4.8-342-g27cbe8cc6-dirty
+[INFO: Main      ] - Routing: nullrouting
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - MAC: CSMA
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 Default channel: 26
+[INFO: Main      ] Node ID: 2
+[INFO: Main      ] Link-layer address: 0202.0200.0274.1200
+[INFO: Sky       ] CC2420 CCA threshold -45
+[INFO: Main      ] Starting Contiki-NG-release/v4.8-342-g27cbe8cc6-dirty
+[INFO: Main      ] - Routing: nullrouting
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - MAC: CSMA
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 Default channel: 26
+[INFO: Main      ] Node ID: 4
+[INFO: Main      ] Link-layer address: 0404.0400.0474.1200
+[INFO: Sky       ] CC2420 CCA threshold -45
+Starting jamming attack
+VALUE = 128
+[INFO: Main      ] Starting Contiki-NG-release/v4.8-342-g27cbe8cc6-dirty
+[INFO: Main      ] - Routing: nullrouting
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - MAC: CSMA
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 Default channel: 26
+[INFO: Main      ] Node ID: 1
+[INFO: Main      ] Link-layer address: 0101.0100.0174.1200
+[INFO: Sky       ] CC2420 CCA threshold -45
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+[INFO: Main      ] Starting Contiki-NG-release/v4.8-342-g27cbe8cc6-dirty
+[INFO: Main      ] - Routing: nullrouting
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - MAC: CSMA
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 Default channel: 26
+[INFO: Main      ] Node ID: 3
+[INFO: Main      ] Link-layer address: 0303.0300.0374.1200
+[INFO: Sky       ] CC2420 CCA threshold -45
+Starting jamming attack 22 
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-95 	 -100 	 -99
+-95 	 -100 	 -99
+-95 	 -100 	 -99
+-100 	 -100 	 -99
+-100 	 -100 	 -99
+-95 	 -100 	 -99
+-100 	 -100 	 -99
+-100 	 -100 	 -99
+-100 	 -100 	 -99
+-100 	 -100 	 -99
+-100 	 -100 	 -99
+-100 	 -100 	 -99
+-95 	 -100 	 -99
+-95 	 -100 	 -98
+-95 	 -100 	 -98
+-95 	 -100 	 -98
+-95 	 -100 	 -98
+-95 	 -100 	 -97
+-95 	 -100 	 -97
+-95 	 -100 	 -97
+-100 	 -100 	 -97
+-100 	 -100 	 -97
+-82 	 -100 	 -96
+-82 	 -100 	 -96
+-74 	 -100 	 -95
+-74 	 -100 	 -94
+-74 	 -100 	 -93
+-68 	 -100 	 -91
+-68 	 -100 	 -90
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+changed to channel 17 because of RSSI
+-100 	 -100 	 -90
+changed to channel 17 because of RSSI
+changed to channel 17 because of RSSI
+-100 	 -100 	 -91
+changed to channel 17 because of RSSI
+-100 	 -100 	 -91
+changed to channel 17 because of RSSI
+-100 	 -100 	 -91
+-100 	 -100 	 -91
+-100 	 -100 	 -92
+-100 	 -100 	 -92
+-100 	 -100 	 -92
+-100 	 -100 	 -92
+-100 	 -100 	 -92
+-100 	 -100 	 -94
+-100 	 -100 	 -95
+-100 	 -100 	 -96
+-100 	 -100 	 -98
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100
+-100 	 -100 	 -100

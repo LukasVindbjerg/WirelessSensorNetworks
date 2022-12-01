@@ -20,6 +20,7 @@
 #include "cc2420.h"
 #include <stdlib.h>
 #include "dev/watchdog.h"
+#include "sys/energest.h"
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
