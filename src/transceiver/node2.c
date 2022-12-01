@@ -29,6 +29,8 @@ PROCESS(hello_world_process, "Hello world process");
 AUTOSTART_PROCESSES(&hello_world_process);
 /*---------------------------------------------------------------------------*/
 
+static int change_channel = 0;
+
 void input_callback(const void *data, uint16_t len,
   const linkaddr_t *src, const linkaddr_t *dest)
 {
@@ -38,6 +40,7 @@ void input_callback(const void *data, uint16_t len,
     LOG_INFO("Received %u from ", count);
     LOG_INFO_LLADDR(src);
     LOG_INFO_("\n");
+    change_channel = 0;
   }
 }
 
@@ -81,6 +84,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
         NETSTACK_NETWORK.output(&node1);
 
         count++;
+        change_channel++;
 
         if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
         {
@@ -89,6 +93,12 @@ PROCESS_THREAD(hello_world_process, ev, data)
         printf("RSSI for channel %d = %d \n", channel, RSSI);
         
         etimer_reset(&et);
+        
+        if(change_channel >= 5){
+          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, 17);
+          printf("changed to channel 17\n");
+          change_channel = 0;
+        }
     }
 
     PROCESS_END();

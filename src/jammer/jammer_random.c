@@ -6,7 +6,7 @@
  *         Malthe Tøttrup <201907882@post.au.dk>
  * 
  *         $ make TARGET=sky distclean 
- *         $ make TARGET=sky MOTES=/dev/ttyUSB0 jammer.upload login
+ *         $ make TARGET=sky MOTES=/dev/ttyUSB0 jammer_random.upload login
  */
 
 #include "contiki.h"
@@ -19,6 +19,7 @@
 #include "sys/log.h"
 #include "cc2420.h"
 #include <stdlib.h>
+#include "dev/watchdog.h"
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
@@ -69,23 +70,39 @@ PROCESS_THREAD(jammer, ev, data)
     strcpy(jpacket.data, "Antonio Gonga is taking down your network.");
     
 
-
-    //int send_time = 0;
+    static int random_interval = 0;
+    static int wait_time = 0;
+    static int send_time = 0;
     
-    //static struct etimer et;
-    //etimer_set(&et, CLOCK_SECOND);
-    srand(107);
+    static struct etimer et;
+    etimer_set(&et, CLOCK_SECOND);
+    srand(128);
+    
+    printf("VALUE = %ld\n", CLOCK_SECOND);
 
     //send a packet at random times between 0-2 seconds
     while(1) {
-        //PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-        //NETSTACK_RADIO.send((void*)&jpacket, JAMMER_PACKET_LEN);
-        cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+        // cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
         
-        //send_time = abs(rand() % (int)CLOCK_SECOND);
-        //printf("random time is = %d \n", send_time);
-        //etimer_set(&et, send_time);
-        //etimer_reset(&et);
+        send_time = abs(rand() % (int)CLOCK_SECOND*4);
+        wait_time = abs(rand() % (int)CLOCK_SECOND*3);
+        if(wait_time == 0)
+            wait_time = 1;
+                
+        watchdog_stop();
+        while(random_interval <= send_time){
+            cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+            //NETSTACK_RADIO.send((void*)&jpacket, JAMMER_PACKET_LEN);
+            random_interval++;
+        }
+        watchdog_start();
+        random_interval = 0;
+
+    
+        //printf("wait_time: %d\n", wait_time);
+        etimer_set(&et, wait_time);
+        etimer_reset(&et);
     }
 
     PROCESS_END();
