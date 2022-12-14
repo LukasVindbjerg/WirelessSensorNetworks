@@ -38,11 +38,19 @@ int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
 uint32_t cpu_time, lpm_time, tx_time, rx_time;
 
-// static unsigned long
-// to_seconds(uint64_t time)
-// {
-//   return (unsigned long)(time / ENERGEST_SECOND);
-// }
+
+// Create a static variable to keep track of the current position in the array
+static int position = 0;
+static const int channel_cycle[4] = {11, 17, 18, 19};
+
+
+
+
+static unsigned long
+to_seconds(uint64_t time)
+{
+  return (unsigned long)(time / ENERGEST_SECOND);
+}
 
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
@@ -84,8 +92,7 @@ void input_callback(const void *data, uint16_t len,
 
 // Define a function that takes a pointer to an array and its length
 int next_channel(const int *array, int cycle_len) {
-  // Create a static variable to keep track of the current position in the array
-  static int position = 0;
+
 
   // Increment the position
   position++;
@@ -100,7 +107,7 @@ int next_channel(const int *array, int cycle_len) {
   return array[position];
 }
 
-static const int channel_cycle[4] = {11, 17, 18, 19};
+
 
 
 PROCESS_THREAD(hello_world_process, ev, data)
@@ -165,7 +172,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   etimer_set(&et,0.1*CLOCK_SECOND);
 
   static int mavg_short = 20;
-  static int mavg_long = 100;
+  static int mavg_long = 40;
   
   static int short_average_index = 0;
   static int short_average_array[20] = {0};
@@ -173,7 +180,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   static int short_average = 0;
 
   static int long_average_index = 1;
-  static int long_average_array[100] = {0};
+  static int long_average_array[40] = {0};
   static int long_total = 0;
   static int long_average = 0;
 
@@ -192,9 +199,6 @@ PROCESS_THREAD(moveing_average_process, ev, data)
 
   while (1)
   {
-
-    energest_on(ENERGEST_TYPE_CPU);
-
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
     if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
         {
@@ -230,33 +234,27 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     //printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
     
     if( short_average *1.1 > long_average){
-          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, 17);
+          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
           printf("changed to channel 17 because of RSSI\n");
         
     }
 
-
-    energest_off(ENERGEST_TYPE_CPU);
-
-    // uint64_t total_time = energest_get_total_time();
-
-    // printf("energy: %4lu \n", to_seconds(total_time));
-
 /* Update all energest times. */
-    // energest_flush();
+    energest_flush();
 
-    // printf("\nEnergest:\n");
-    // printf(" CPU          %4lus LPM      %4lus DEEP LPM %4lus  Total time %lus\n",
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_CPU)),
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_LPM)),
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_DEEP_LPM)),
-    //        to_seconds(ENERGEST_GET_TOTAL_TIME()));
-    // printf(" Radio LISTEN %4lus TRANSMIT %4lus OFF      %4lus\n",
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_LISTEN)),
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_TRANSMIT)),
-    //        to_seconds(ENERGEST_GET_TOTAL_TIME()
-    //                   - energest_type_time(ENERGEST_TYPE_TRANSMIT)
-    //                   - energest_type_time(ENERGEST_TYPE_LISTEN)));
+    printf("\nEnergest:\n");
+    printf(" CPU          %4lus LPM      %4lus DEEP LPM %4lus  Total time %lus\n",
+           to_seconds(energest_type_time(ENERGEST_TYPE_CPU)),
+           to_seconds(energest_type_time(ENERGEST_TYPE_LPM)),
+           to_seconds(energest_type_time(ENERGEST_TYPE_DEEP_LPM)),
+           to_seconds(ENERGEST_GET_TOTAL_TIME()));
+
+    printf(" Radio LISTEN %4lus TRANSMIT %4lus OFF      %4lus\n",
+           to_seconds(energest_type_time(ENERGEST_TYPE_LISTEN)),
+           to_seconds(energest_type_time(ENERGEST_TYPE_TRANSMIT)),
+           to_seconds(ENERGEST_GET_TOTAL_TIME()
+                      - energest_type_time(ENERGEST_TYPE_TRANSMIT)
+                      - energest_type_time(ENERGEST_TYPE_LISTEN)));
 
     etimer_reset(&et); 
   }

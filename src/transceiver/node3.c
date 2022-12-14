@@ -36,6 +36,12 @@ static const linkaddr_t network[3] = {node1, node2, node3};
 int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
 
+
+// Create a static variable to keep track of the current position in the array
+static int position = 0;
+static const int channel_cycle[4] = {11, 17, 18, 19};
+
+
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
 PROCESS(moveing_average_process, "moveing average process");
@@ -72,9 +78,9 @@ void write_to_file(int value, char *filename){
 
 
 // Define a function that takes a pointer to an array and its length
-int next_channel(const int *array, int cycle_len) {
-  // Create a static variable to keep track of the current position in the array
-  static int position = 0;
+int next_channel(const int *array){ //}, int cycle_len) {
+
+  int cycle_len = sizeof(array) / sizeof(array[0]);
 
   // Increment the position
   position++;
@@ -89,7 +95,8 @@ int next_channel(const int *array, int cycle_len) {
   return array[position];
 }
 
-static const int channel_cycle[4] = {11, 17, 18, 19};
+
+
 
 
 
@@ -130,7 +137,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
         etimer_reset(&et);
 
         if(change_channel[0] >= 5 || change_channel[1] >= 5){
-           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
+           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle));
           for (int i = 0; i < 2; i++){
             change_channel[i] = 0;
           }
@@ -153,7 +160,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   etimer_set(&et,0.1*CLOCK_SECOND);
 
   static int mavg_short = 20;
-  static int mavg_long = 100;
+  static int mavg_long = 60;
   
   static int short_average_index = 0;
   static int short_average_array[20] = {0};
@@ -161,7 +168,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   static int short_average = 0;
 
   static int long_average_index = 1;
-  static int long_average_array[100] = {0};
+  static int long_average_array[60] = {0};
   static int long_total = 0;
   static int long_average = 0;
 
@@ -215,7 +222,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     //printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
     
     if( short_average *1.1 > long_average){
-          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, 17);
+          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle));
           printf("changed to channel 17 because of RSSI\n");
         
     }
