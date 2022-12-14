@@ -1,7 +1,7 @@
 
 /**
  * \file
- *         Program for jamming a specific current_channel
+ *         Program for jamming a specific channel
  * \author
  *         Malthe Tøttrup <201907882@post.au.dk>
  * 
@@ -20,6 +20,7 @@
 #include "sys/log.h"
 #include "cc2420.h"
 #include "dev/watchdog.h"
+#include "sys/energest.h"
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
@@ -40,9 +41,10 @@ AUTOSTART_PROCESSES(&jammer);
 /*---------------------------------------------------------------------------*/
 bool check_channel_activity(){
     int channel_activity = 0;
-    
     for (int i = 0; i < 25000; i++){
+        NETSTACK_RADIO.on();
         channel_activity += NETSTACK_RADIO.channel_clear();     //returns 0 if channel is busy and 1 if its clear
+        NETSTACK_RADIO.off();
     }
     printf("channel activity result: %d \n", channel_activity);
 
@@ -54,7 +56,6 @@ bool check_channel_activity(){
         printf("No activity found on channel %d. \n", current_channel);
         return false;
     }
-    
 }
 
 PROCESS_THREAD(jammer, ev, data)
@@ -62,11 +63,11 @@ PROCESS_THREAD(jammer, ev, data)
     PROCESS_BEGIN();
     printf("Starting jamming attack %d \n", (11 << 1));
     
-    NETSTACK_RADIO.on();
+    // NETSTACK_RADIO.on();
 
     //Hopefully this turns CCA off...
     // NETSTACK_RADIO.set_value(RADIO_PARAM_TX_MODE, 0);   //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
-        
+    
     
     cc2420_set_channel(current_channel);
     jpacket_t jpacket;
@@ -99,7 +100,9 @@ PROCESS_THREAD(jammer, ev, data)
         
         for (int i = 0; i < 10000; i++)
         {
+            NETSTACK_RADIO.on();
             cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+            NETSTACK_RADIO.off();
         }
         watchdog_start();
 
