@@ -9,8 +9,8 @@
  *         $ make TARGET=sky MOTES=/dev/ttyUSB0 node1.upload login
  */
 
-#include <stdio.h> /* For printf() */
 #include "contiki.h"
+#include <stdio.h> /* For printf() */
 #include <math.h>
 #include <os/dev/radio.h>  
 #include "net/nullnet/nullnet.h"
@@ -18,8 +18,8 @@
 #include <string.h>
 #include "sys/log.h"
 #include "cc2420.h"
-// #include "os/storage/cfs/cfs.h"
-#include "sys/energest.h"
+#include "os/storage/cfs/cfs.h"
+
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
@@ -32,17 +32,9 @@
 #define node2   {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00 }}
 #define node3   {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00 }}
 
-
 static const linkaddr_t network[3] = {node1, node2, node3};
 int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
-uint32_t cpu_time, lpm_time, tx_time, rx_time;
-
-// static unsigned long
-// to_seconds(uint64_t time)
-// {
-//   return (unsigned long)(time / ENERGEST_SECOND);
-// }
 
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
@@ -60,10 +52,10 @@ void input_callback(const void *data, uint16_t len,
     // LOG_INFO("Received %u from ", count);
     // LOG_INFO_LLADDR(src);
     // LOG_INFO_("\n");
-    if(memcmp(src, &network[1], sizeof(src))){
+    if(memcmp(src, &network[0], sizeof(src))){
       change_channel[0] = 0;
     }
-    else if(memcmp(src, &network[2], sizeof(src))) {
+    else if(memcmp(src, &network[1], sizeof(src))) {
       change_channel[1] = 0;
     }
     
@@ -71,15 +63,12 @@ void input_callback(const void *data, uint16_t len,
   }
 }
 
-
-
-// //write to file
-// void write_to_file(int value, char *filename){
-//   int file = cfs_open(filename, CFS_WRITE);
-//   cfs_write(file, (uint8_t *)&value, sizeof(value));
-//   cfs_close(file);
-// }
-
+//write to file
+void write_to_file(int value, char *filename){
+  int file = cfs_open(filename, CFS_WRITE);
+  cfs_write(file, (uint8_t *)&value, sizeof(value));
+  cfs_close(file);
+}
 
 
 // Define a function that takes a pointer to an array and its length
@@ -101,6 +90,7 @@ int next_channel(const int *array, int cycle_len) {
 }
 
 static const int channel_cycle[4] = {11, 17, 18, 19};
+
 
 
 PROCESS_THREAD(hello_world_process, ev, data)
@@ -129,8 +119,8 @@ PROCESS_THREAD(hello_world_process, ev, data)
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
         LOG_INFO("Send/recieved : %u/%u \n ", count, packet_recieved);
 
+        NETSTACK_NETWORK.output(&network[0]);
         NETSTACK_NETWORK.output(&network[1]);
-        NETSTACK_NETWORK.output(&network[2]);
 
         count++;
         for (int i = 0; i < 2; i++){
@@ -140,7 +130,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
         etimer_reset(&et);
 
         if(change_channel[0] >= 5 || change_channel[1] >= 5){
-          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
+           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
           for (int i = 0; i < 2; i++){
             change_channel[i] = 0;
           }
@@ -156,8 +146,6 @@ PROCESS_THREAD(hello_world_process, ev, data)
 PROCESS_THREAD(moveing_average_process, ev, data)
 {
   PROCESS_BEGIN();
-  
-
   NETSTACK_RADIO.on();
   static radio_value_t RSSI;
   static struct etimer et;
@@ -178,7 +166,6 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   static int long_average = 0;
 
   static int fill = 0;
-
   while(fill < mavg_long){
         if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
         {
@@ -189,11 +176,9 @@ PROCESS_THREAD(moveing_average_process, ev, data)
         fill++;
   }
 
-
   while (1)
   {
-
-    energest_on(ENERGEST_TYPE_CPU);
+    
 
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
     if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
@@ -234,33 +219,9 @@ PROCESS_THREAD(moveing_average_process, ev, data)
           printf("changed to channel 17 because of RSSI\n");
         
     }
-
-
-    energest_off(ENERGEST_TYPE_CPU);
-
-    // uint64_t total_time = energest_get_total_time();
-
-    // printf("energy: %4lu \n", to_seconds(total_time));
-
-/* Update all energest times. */
-    // energest_flush();
-
-    // printf("\nEnergest:\n");
-    // printf(" CPU          %4lus LPM      %4lus DEEP LPM %4lus  Total time %lus\n",
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_CPU)),
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_LPM)),
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_DEEP_LPM)),
-    //        to_seconds(ENERGEST_GET_TOTAL_TIME()));
-    // printf(" Radio LISTEN %4lus TRANSMIT %4lus OFF      %4lus\n",
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_LISTEN)),
-    //        to_seconds(energest_type_time(ENERGEST_TYPE_TRANSMIT)),
-    //        to_seconds(ENERGEST_GET_TOTAL_TIME()
-    //                   - energest_type_time(ENERGEST_TYPE_TRANSMIT)
-    //                   - energest_type_time(ENERGEST_TYPE_LISTEN)));
-
+    
     etimer_reset(&et); 
   }
-  
   
   PROCESS_END();
 }

@@ -24,9 +24,17 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
 #define SEND_INTERVAL (2 * CLOCK_SECOND)
+#define mote186 {{ 0x34, 0xa3, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }} //Lukas
+#define mote182 {{ 0x83, 0xac, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }} //Daniel
+#define mote118 {{ 0x5d, 0xe7, 0x93, 0x1c, 0x00, 0x74, 0x12, 0x00 }} //Malthe
+#define mote170 {{ 0x25, 0xac, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }} //Jakob 
+#define node1   {{ 0x01, 0x01, 0x01, 0x00, 0x01, 0x74, 0x12, 0x00 }}
+#define node2   {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00 }}
+#define node3   {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00 }}
 
+static const linkaddr_t network[3] = {node1, node2, node3};
+int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
-static int change_channel = 0;
 
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
@@ -41,21 +49,60 @@ void input_callback(const void *data, uint16_t len,
   if(len == sizeof(unsigned)) {
     unsigned count;
     memcpy(&count, data, sizeof(count));
-    //LOG_INFO("Received %u from ", count);
-    //LOG_INFO_LLADDR(src);
-    //LOG_INFO_("\n");
-    change_channel = 0;
+    // LOG_INFO("Received %u from ", count);
+    // LOG_INFO_LLADDR(src);
+    // LOG_INFO_("\n");
+    if(memcmp(src, &network[0], sizeof(src))){
+      change_channel[0] = 0;
+    }
+    else if(memcmp(src, &network[2], sizeof(src))) {
+      change_channel[1] = 0;
+    }
+    
     packet_recieved++;
   }
 }
 
+
+
 //write to file
-void write_to_file(int value, char *filename){
-  int file = cfs_open(filename, CFS_WRITE);
-  cfs_write(file, (uint8_t *)&value, sizeof(value));
+void write_to_file(){
+  char data[] = "Hello, world!";
+  int file;
+
+  file = cfs_open("myfile.txt", CFS_WRITE);
+
+  if (file < 0) {
+    printf("Error opening file!\n");
+    return;
+  }
+
+  cfs_write(file, data, sizeof(data));
+
   cfs_close(file);
+
+  printf("data written to file \n");
 }
 
+// Define a function that takes a pointer to an array and its length
+int next_channel(const int *array, int cycle_len) {
+  // Create a static variable to keep track of the current position in the array
+  static int position = 0;
+
+  // Increment the position
+  position++;
+
+  // If we've reached the end of the array, reset the position to 0
+  if (position >= cycle_len) {
+    position = 0;
+  }
+
+  // Return the element at the current position
+  printf("changed to channel %d because of message shortage\n", array[position]);
+  return array[position];
+}
+
+static const int channel_cycle[4] = {11, 17, 18, 19};
 
 
 PROCESS_THREAD(hello_world_process, ev, data)
@@ -77,33 +124,29 @@ PROCESS_THREAD(hello_world_process, ev, data)
     nullnet_len = sizeof(count);
     nullnet_set_input_callback(input_callback);
 
-    //static linkaddr_t mote186 =         {{ 0x34, 0xa3, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Lukas
-    //static linkaddr_t mote182 =         {{ 0x83, 0xac, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Daniel
-    //static linkaddr_t mote118 =         {{ 0x5d, 0xe7, 0x93, 0x1c, 0x00, 0x74, 0x12, 0x00 }}; //Malthe
-    //static linkaddr_t mote170 =         {{ 0x25, 0xac, 0xdf, 0x1c, 0x00, 0x74, 0x12, 0x00}}; //Jakob 
-    static linkaddr_t node1 =           {{ 0x01, 0x01, 0x01, 0x00, 0x01, 0x74, 0x12, 0x00}};
-    //static linkaddr_t node2 =           {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00}};
-    //static linkaddr_t node3 =           {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00}};
 
-    
     etimer_set(&et, SEND_INTERVAL);
 
     while(1) {
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
         LOG_INFO("Send/recieved : %u/%u \n ", count, packet_recieved);
 
-        NETSTACK_NETWORK.output(&node1);
+        NETSTACK_NETWORK.output(&network[0]);
+        NETSTACK_NETWORK.output(&network[2]);
 
         count++;
-        change_channel++;
-
+        for (int i = 0; i < 2; i++){
+          change_channel[i]++;
+        }
         
         etimer_reset(&et);
 
-        if(change_channel >= 5){
-          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, 17);
-          printf("changed to channel 17 because of message shortage\n");
-          change_channel = 0;
+        if(change_channel[0] >= 5 || change_channel[1] >= 5){
+           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
+           write_to_file();
+          for (int i = 0; i < 2; i++){
+            change_channel[i] = 0;
+          }
         }
     }
 
@@ -157,9 +200,10 @@ PROCESS_THREAD(moveing_average_process, ev, data)
         }
     
     long_average_array[long_average_index] = RSSI;
-    for(int i = 0; i < mavg_long; i++){
+    for(int i = 0; i < mavg_long; i++){;
       long_total += long_average_array[i];
-    } 
+    }
+
     long_average = long_total/mavg_long;
     long_total = 0;
 

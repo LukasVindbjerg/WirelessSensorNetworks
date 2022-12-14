@@ -57,7 +57,6 @@ PROCESS_THREAD(jammer, ev, data)
     memset(&jpacket, 0, sizeof(jpacket_t));
     
     strcpy(jpacket.data, "Antonio Gonga is taking down your network.");
-    
 
     //static struct etimer et;
     //etimer_set(&et, SEND_INTERVAL);
@@ -66,6 +65,7 @@ PROCESS_THREAD(jammer, ev, data)
         //PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
         //NETSTACK_RADIO.send((void*)&jpacket, JAMMER_PACKET_LEN);
         cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+
         //etimer_reset(&et);
     }
 

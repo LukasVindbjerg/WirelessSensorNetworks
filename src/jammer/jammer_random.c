@@ -51,7 +51,7 @@ PROCESS_THREAD(jammer, ev, data)
     PROCESS_BEGIN();
     printf("Starting jamming attack\n");
 
-    static int channel = 11;
+    static int channel = 17;
     NETSTACK_RADIO.on();
     //NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 0); //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
     
