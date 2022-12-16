@@ -6,7 +6,7 @@
  *         Malthe Tøttrup <201907882@post.au.dk>
  * 
  *         $ make TARGET=sky distclean 
- *         $ make TARGET=sky MOTES=/dev/ttyUSB0 node1.upload login
+ *         $ make TARGET=sky MOTES=/dev/ttyUSB2 node2.upload login
  */
 
 #include "contiki.h"
@@ -33,7 +33,7 @@
 #define node2   {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00 }}
 #define node3   {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00 }}
 
-static const linkaddr_t network[3] = {node1, node2, node3};
+static const linkaddr_t network[3] = {mote186, mote118, mote182};
 int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
 
@@ -127,7 +127,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
         change_channel[0]++;
         change_channel[1]++;
 
-        if(change_channel[0] + change_channel[1] >= 6){
+        if(change_channel[0] + change_channel[1] >= 10){
           printf("Jamming detected by message shortage:");
           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle));
           change_channel[0] = 0;
@@ -166,8 +166,8 @@ PROCESS_THREAD(moveing_average_process, ev, data)
 
   static int fill = 0;
   static bool reset = true;
-  
 
+  static int ctr = 0;
   while (1)
   {
     if(reset){
@@ -217,11 +217,15 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     }
     short_average_index++;
 
-    //printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
-    printf("RSSI,%d\n", RSSI);
-    printf("RSSI short,%d\n", short_average);
-    printf("RSSI long,%d\n", long_average);
+    // printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
 
+    ctr++;
+    if (ctr == 10){
+      printf("RSSI,%d\n", RSSI);
+      printf("RSSI short,%d\n", short_average);
+      printf("RSSI long,%d\n", long_average);
+      ctr = 0;
+    }
     if( short_average * percentage > long_average){
           printf("Jamming detected by RSSI:");
           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle)); 

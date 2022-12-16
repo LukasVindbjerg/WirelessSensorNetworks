@@ -1,0 +1,404 @@
+Resetting RSSI values 
+RSSI,-90
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+Send,0
+Recieved,3
+RSSI,-84
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+Send,1
+Recieved,5
+RSSI,-89
+RSSI short,-89
+RSSI long,-90
+RSSI,-91
+RSSI short,-88
+RSSI long,-89
+Send,2
+Recieved,8
+RSSI,-88
+RSSI short,-88
+RSSI long,-89
+RSSI,-91
+RSSI short,-87
+RSSI long,-88
+Send,3
+Recieved,10
+RSSI,-89
+RSSI short,-88
+RSSI long,-88
+RSSI,-91
+RSSI short,-90
+RSSI long,-88
+Send,4
+Recieved,13
+RSSI,-88
+RSSI short,-90
+RSSI long,-89
+RSSI,-86
+RSSI short,-90
+RSSI long,-89
+Send,5
+Recieved,15
+RSSI,-85
+RSSI short,-90
+RSSI long,-89
+RSSI,-91
+RSSI short,-89
+RSSI long,-90
+Send,6
+Recieved,18
+RSSI,-92
+RSSI short,-89
+RSSI long,-89
+RSSI,-89
+RSSI short,-90
+RSSI long,-90
+RSSI,-43
+RSSI short,-84
+RSSI long,-87
+Send,7
+Recieved,19
+Jamming detected by RSSI: changed to channel 17 
+Resetting RSSI values 
+RSSI,-87
+RSSI short,-90
+RSSI long,-90
+RSSI,-90
+RSSI short,-89
+RSSI long,-91
+Send,8
+Recieved,22
+RSSI,-90
+RSSI short,-89
+RSSI long,-90
+RSSI,-91
+RSSI short,-89
+RSSI long,-89
+Send,9
+Recieved,24
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+Send,10
+Recieved,26
+RSSI,-90
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+Send,11
+Recieved,28
+RSSI,-90
+RSSI short,-90
+RSSI long,-90
+RSSI,-90
+RSSI short,-90
+RSSI long,-90
+Send,12
+Recieved,30
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+RSSI,-89
+RSSI short,-90
+RSSI long,-90
+Send,13
+Recieved,32
+RSSI,-90
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+Send,14
+Recieved,34
+RSSI,-90
+RSSI short,-90
+RSSI long,-90
+RSSI,-91
+RSSI short,-90
+RSSI long,-90
+Send,15
+Recieved,36
+RSSI,-89
+RSSI short,-89
+RSSI long,-90
+RSSI,-89
+RSSI short,-88
+RSSI long,-89
+Send,16
+Recieved,38
+RSSI,-91
+RSSI short,-88
+RSSI long,-89
+RSSI,-89
+RSSI short,-89
+RSSI long,-89
+Send,17
+Recieved,39
+RSSI,-91
+RSSI short,-89
+RSSI long,-89
+RSSI,-90
+RSSI short,-89
+RSSI long,-90
+Send,18
+Recieved,42
+RSSI,-89
+RSSI short,-89
+RSSI long,-89
+RSSI,-90
+RSSI short,-89
+RSSI long,-89
+Send,19
+Recieved,43
+RSSI,-89
+RSSI short,-89
+RSSI long,-89
+RSSI,-89
+RSSI short,-88
+RSSI long,-88
+Send,20
+Recieved,46
+RSSI,-89
+RSSI short,-88
+RSSI long,-88
+RSSI,-89
+RSSI short,-89
+RSSI long,-89
+Send,21
+Recieved,47
+RSSI,-89
+RSSI short,-89
+RSSI long,-88
+RSSI,-90
+RSSI short,-89
+RSSI long,-89
+RSSI,-79
+RSSI short,-88
+RSSI long,-88
+Send,22
+Recieved,49
+RSSI,-90
+RSSI short,-89
+RSSI long,-89
+RSSI,-53
+RSSI short,-78
+RSSI long,-85
+Send,23
+Recieved,51
+Jamming detected by RSSI: changed to channel 18 
+Resetting RSSI values 
+RSSI,-89
+RSSI short,-89
+RSSI long,-89
+RSSI,-88
+RSSI short,-89
+RSSI long,-89
+Send,24
+Recieved,53
+RSSI,-90
+RSSI short,-88
+RSSI long,-89
+RSSI,-87
+RSSI short,-88
+RSSI long,-89
+Send,25
+Recieved,56
+RSSI,-88
+RSSI short,-88
+RSSI long,-89
+RSSI,-88
+RSSI short,-88
+RSSI long,-88
+Send,26
+Recieved,57
+RSSI,-89
+RSSI short,-88
+RSSI long,-88
+RSSI,-89
+RSSI short,-89
+RSSI long,-88
+Send,27
+Recieved,60
+RSSI,-81
+RSSI short,-90
+RSSI long,-89
+RSSI,-90
+RSSI short,-88
+RSSI long,-90
+Send,28
+Recieved,62
+RSSI,-92
+RSSI short,-88
+RSSI long,-89
+RSSI,-92
+RSSI short,-91
+RSSI long,-89
+RSSI,-92
+RSSI short,-92
+RSSI long,-90
+Send,29
+Recieved,64
+RSSI,-90
+RSSI short,-91
+RSSI long,-90
+RSSI,-92
+RSSI short,-89
+RSSI long,-90
+Send,30
+Recieved,66
+RSSI,-92
+RSSI short,-89
+RSSI long,-90
+RSSI,-85
+RSSI short,-90
+RSSI long,-90
+Send,31
+Recieved,67
+RSSI,-92
+RSSI short,-91
+RSSI long,-90
+RSSI,-92
+RSSI short,-90
+RSSI long,-90
+Send,32
+Recieved,70
+RSSI,-92
+RSSI short,-90
+RSSI long,-90
+RSSI,-86
+RSSI short,-89
+RSSI long,-90
+Send,33
+Recieved,72
+RSSI,-88
+RSSI short,-88
+RSSI long,-89
+RSSI,-89
+RSSI short,-88
+RSSI long,-89
+Send,34
+Recieved,74
+RSSI,-93
+RSSI short,-91
+RSSI long,-89
+RSSI,-89
+RSSI short,-90
+RSSI long,-89
+Send,35
+Recieved,75
+RSSI,-88
+RSSI short,-89
+RSSI long,-89
+RSSI,-90
+RSSI short,-88
+RSSI long,-89
+Send,36
+Recieved,78
+RSSI,-93
+RSSI short,-89
+RSSI long,-90
+RSSI,-92
+RSSI short,-91
+RSSI long,-90
+RSSI,-93
+RSSI short,-90
+RSSI long,-89
+Send,37
+Recieved,79
+RSSI,-88
+RSSI short,-89
+RSSI long,-91
+RSSI,-89
+RSSI short,-90
+RSSI long,-89
+Send,38
+Recieved,81
+RSSI,-92
+RSSI short,-90
+RSSI long,-90
+RSSI,-92
+RSSI short,-88
+RSSI long,-89
+Send,39
+Recieved,84
+RSSI,-92
+RSSI short,-90
+RSSI long,-89
+RSSI,-92
+RSSI short,-92
+RSSI long,-90
+Send,40
+Recieved,86
+RSSI,-92
+RSSI short,-92
+RSSI long,-90
+RSSI,-92
+RSSI short,-91
+RSSI long,-91
+Send,41
+Recieved,88
+RSSI,-92
+RSSI short,-91
+RSSI long,-91
+RSSI,-92
+RSSI short,-91
+RSSI long,-92
+Send,42
+Recieved,90
+RSSI,-93
+RSSI short,-91
+RSSI long,-91
+RSSI,-92
+RSSI short,-91
+RSSI long,-91
+Send,43
+Recieved,92
+RSSI,-93
+RSSI short,-92
+RSSI long,-91
+Jamming detected by RSSI: changed to channel 19 
+Resetting RSSI values 
+RSSI,-84
+RSSI short,-84
+RSSI long,-84
+RSSI,-89
+RSSI short,-84
+RSSI long,-84
+Send,44
+Recieved,93
+RSSI,-88
+RSSI short,-86
+RSSI long,-85
+RSSI,-88
+RSSI short,-88
+RSSI long,-85
+Send,45
+Recieved,96
+RSSI,-89
+RSSI short,-86
+RSSI long,-86
+RSSI,-89
+RSSI short,-85
+RSSI long,-86
+Send,46
+Recieved,98
+RSSI,-88
+RSSI short,-86
+RSSI long,-86

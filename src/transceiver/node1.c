@@ -34,7 +34,7 @@
 #define node2   {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00 }}
 #define node3   {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00 }}
 
-static const linkaddr_t network[3] = {node1, node2, node3};
+static const linkaddr_t network[3] = {mote186, mote118, mote182};
 int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
 
@@ -128,7 +128,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
         change_channel[0]++;
         change_channel[1]++;
 
-        if(change_channel[0] + change_channel[1] >= 6){
+        if(change_channel[0] + change_channel[1] >= 10){
           printf("Jamming detected by message shortage:");
           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle));
           change_channel[0] = 0;
@@ -168,7 +168,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   static int fill = 0;
   static bool reset = true;
 
-  
+  static int ctr = 0;
 
   while (1)
   {
@@ -198,7 +198,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     }
 
     long_average = long_total/mavg_long;
-    long_total = 0;
+    
 
     if(long_average_index == mavg_long){
       long_average_index = -1;
@@ -211,17 +211,23 @@ PROCESS_THREAD(moveing_average_process, ev, data)
       short_total += short_average_array[i];
     }
     short_average = short_total/mavg_short;
-    short_total = 0;
 
     if(short_average_index == mavg_short){
       short_average_index = -1;
     }
     short_average_index++;
 
-    printf("RSSI,%d\n", RSSI);
-    printf("RSSI short,%d\n", short_average);
-    printf("RSSI long,%d\n", long_average);
-    
+
+    ctr++;
+    if (ctr == 10){
+      printf("RSSI,%d\n", RSSI);
+      printf("RSSI short,%d\n", short_average);
+      printf("RSSI long,%d\n", long_average);
+      ctr = 0;
+    }
+
+    long_total = 0;
+    short_total = 0;
     if( short_average * percentage > long_average){
           printf("Jamming detected by RSSI:");
           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle)); 

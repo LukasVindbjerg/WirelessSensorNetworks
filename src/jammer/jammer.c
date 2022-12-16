@@ -66,7 +66,7 @@ PROCESS_THREAD(jammer, ev, data)
     // NETSTACK_RADIO.on();
 
     //Hopefully this turns CCA off...
-    // NETSTACK_RADIO.set_value(RADIO_PARAM_TX_MODE, 0);   //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
+    NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 65);
     
     
     cc2420_set_channel(current_channel);
@@ -86,7 +86,7 @@ PROCESS_THREAD(jammer, ev, data)
         {   
             // Cycle to next current_channel
             // current_channel = (current_channel >= 26) ? 11 : current_channel++;
-            if (current_channel >= 26) {
+            if (current_channel >= 25) {
                 current_channel = 11;
             } else {
                 current_channel++;

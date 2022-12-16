@@ -80,7 +80,7 @@ PROCESS_THREAD(jammer, ev, data)
     printf("Starting jamming attack\n");
 
     NETSTACK_RADIO.on();
-    //NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 0); //turning CCA off (https://sourceforge.net/p/contiki/mailman/message/34745886/)
+    NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 70);
     
     //Hopefully this turns CCA off...
     NETSTACK_RADIO.set_value(RADIO_PARAM_TX_MODE, 0);
@@ -119,10 +119,11 @@ PROCESS_THREAD(jammer, ev, data)
         {   
             // Cycle to next current_channel
             // current_channel = (current_channel >= 26) ? 11 : current_channel++;
-            if (current_channel >= 26) {
+            if (current_channel >= 25) {
                 current_channel = 11;
             } else {
                 current_channel++;
+                if(current_channel == 12) { current_channel = 17;}
             }
             cc2420_set_channel(current_channel);
             // Start loop again
