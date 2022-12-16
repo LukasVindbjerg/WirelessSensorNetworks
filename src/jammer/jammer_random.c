@@ -80,8 +80,8 @@ PROCESS_THREAD(jammer, ev, data)
     printf("Starting jamming attack\n");
 
     NETSTACK_RADIO.on();
-    NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 70);
-    
+    // NETSTACK_RADIO.set_value(RADIO_PARAM_CCA_THRESHOLD, 70);
+
     //Hopefully this turns CCA off...
     NETSTACK_RADIO.set_value(RADIO_PARAM_TX_MODE, 0);
 

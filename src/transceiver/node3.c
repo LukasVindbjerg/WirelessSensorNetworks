@@ -33,7 +33,8 @@
 #define node2   {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00 }}
 #define node3   {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00 }}
 
-static const linkaddr_t network[3] = {mote186, mote118, mote182};
+static const linkaddr_t network[3] = {node1, node2, node3};
+// static const linkaddr_t network[3] = {mote186, mote118, mote182};
 int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
 
