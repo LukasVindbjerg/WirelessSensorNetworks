@@ -53,14 +53,14 @@ int abs(a){
 
 bool check_channel_activity(){
     int channel_activity = 0;
-    for (int i = 0; i < 25000; i++){
+    for (int i = 0; i < 10000; i++){
         NETSTACK_RADIO.on();
         channel_activity += NETSTACK_RADIO.channel_clear();     //returns 0 if channel is busy and 1 if its clear
         NETSTACK_RADIO.off();
     }
     printf("channel activity result: %d \n", channel_activity);
 
-    if(channel_activity != 25000){
+    if(channel_activity != 10000){
         printf("Activity found on channel %d! \n", current_channel);
         return true; 
     }
@@ -86,13 +86,13 @@ PROCESS_THREAD(jammer, ev, data)
     NETSTACK_RADIO.set_value(RADIO_PARAM_TX_MODE, 0);
 
     //Connect to the desired channel
-    if(NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, channel) != RADIO_RESULT_OK) 
+    if(NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, current_channel) != RADIO_RESULT_OK) 
     {
         printf("failed channel set");
     }
     NETSTACK_RADIO.off();
 
-    cc2420_set_channel(channel);
+    cc2420_set_channel(current_channel);
     
     jpacket_t jpacket;
     memset(&jpacket, 0, sizeof(jpacket_t));
@@ -103,18 +103,18 @@ PROCESS_THREAD(jammer, ev, data)
     static int random_interval = 0;
     static int wait_time = 0;
     static int send_time = 0;
+    static int k = 0;
     
     static struct etimer et;
     etimer_set(&et, CLOCK_SECOND);
     srand(128);
-    
-    printf("VALUE = %ld\n", CLOCK_SECOND);
 
     //send a packet at random times between 0-2 seconds
     while(1) {
 
         // Check if current_channel is active
         // If not active, we go to next channel and try again
+        watchdog_stop();
         if (!check_channel_activity())
         {   
             // Cycle to next current_channel
@@ -129,32 +129,34 @@ PROCESS_THREAD(jammer, ev, data)
             continue;
         }
 
+        while(k < 10){
+            PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
+            // cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+            
+            send_time = abs(rand() % (int)CLOCK_SECOND*4);
+            wait_time = abs(rand() % (int)CLOCK_SECOND*3);
+            if(wait_time == 0)
+                wait_time = 1;
+                    
+            
+            while(random_interval <= send_time){
+                NETSTACK_RADIO.on();
+                cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
+                NETSTACK_RADIO.off();
+                random_interval++;
+            }
+            
+            random_interval = 0;
 
-        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-        // cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
-        
-        send_time = abs(rand() % (int)CLOCK_SECOND*4);
-        wait_time = abs(rand() % (int)CLOCK_SECOND*3);
-        if(wait_time == 0)
-            wait_time = 1;
-                
-        watchdog_stop();
-        while(random_interval <= send_time){
-            NETSTACK_RADIO.on();
-            cc2420_driver.send((void*)&jpacket, JAMMER_PACKET_LEN);
-            NETSTACK_RADIO.off();
-            //NETSTACK_RADIO.send((void*)&jpacket, JAMMER_PACKET_LEN);
-            random_interval++;
+            //printf("wait_time: %d\n", wait_time);
+            etimer_set(&et, wait_time);
+            etimer_reset(&et);
+            k++;
         }
         watchdog_start();
-        random_interval = 0;
-
-    
-        //printf("wait_time: %d\n", wait_time);
-        etimer_set(&et, wait_time);
-        etimer_reset(&et);
+        k = 0; 
     }
 
     PROCESS_END();
 }
-/*---------------------------------------------------------------------------*/
+

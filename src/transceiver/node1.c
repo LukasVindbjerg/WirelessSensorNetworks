@@ -4,13 +4,14 @@
  *         Program that tests the RSSI for channels 11-26  
  * \author
  *         Malthe Tøttrup <201907882@post.au.dk>
- * 
+ *  
+ *         $ make TARGET=sky motelist
  *         $ make TARGET=sky distclean 
  *         $ make TARGET=sky MOTES=/dev/ttyUSB0 node1.upload login
  */
 
-#include <stdio.h> /* For printf() */
 #include "contiki.h"
+#include <stdio.h> /* For printf() */
 #include <math.h>
 #include <os/dev/radio.h>  
 #include "net/nullnet/nullnet.h"
@@ -18,8 +19,9 @@
 #include <string.h>
 #include "sys/log.h"
 #include "cc2420.h"
-// #include "os/storage/cfs/cfs.h"
-#include "sys/energest.h"
+#include "os/storage/cfs/cfs.h"
+#include <stdbool.h>
+
 
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
@@ -32,25 +34,16 @@
 #define node2   {{ 0x02, 0x02, 0x02, 0x00, 0x02, 0x74, 0x12, 0x00 }}
 #define node3   {{ 0x03, 0x03, 0x03, 0x00, 0x03, 0x74, 0x12, 0x00 }}
 
-
 static const linkaddr_t network[3] = {node1, node2, node3};
 int change_channel[2] = {0, 0};
 static int packet_recieved = 0;
-uint32_t cpu_time, lpm_time, tx_time, rx_time;
+
 
 
 // Create a static variable to keep track of the current position in the array
 static int position = 0;
 static const int channel_cycle[4] = {11, 17, 18, 19};
 
-
-
-
-static unsigned long
-to_seconds(uint64_t time)
-{
-  return (unsigned long)(time / ENERGEST_SECOND);
-}
 
 /*---------------------------------------------------------------------------*/
 PROCESS(hello_world_process, "Hello world process");
@@ -80,19 +73,10 @@ void input_callback(const void *data, uint16_t len,
 }
 
 
-
-// //write to file
-// void write_to_file(int value, char *filename){
-//   int file = cfs_open(filename, CFS_WRITE);
-//   cfs_write(file, (uint8_t *)&value, sizeof(value));
-//   cfs_close(file);
-// }
-
-
-
 // Define a function that takes a pointer to an array and its length
-int next_channel(const int *array, int cycle_len) {
+int next_channel(const int *array){
 
+  int cycle_len = 4;
 
   // Increment the position
   position++;
@@ -103,10 +87,9 @@ int next_channel(const int *array, int cycle_len) {
   }
 
   // Return the element at the current position
-  printf("changed to channel %d because of message shortage\n", array[position]);
+  printf(" changed to channel %d \n", array[position]);
   return array[position];
 }
-
 
 
 
@@ -134,24 +117,24 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
     while(1) {
         PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-        LOG_INFO("Send/recieved : %u/%u \n ", count, packet_recieved);
+        // LOG_INFO("Send/recieved : %u/%u \n ", count, packet_recieved);
+        printf("Send,%d\n", count);
+        printf("Recieved,%d\n", packet_recieved);
 
         NETSTACK_NETWORK.output(&network[1]);
         NETSTACK_NETWORK.output(&network[2]);
 
         count++;
-        for (int i = 0; i < 2; i++){
-          change_channel[i]++;
-        }
-        
-        etimer_reset(&et);
+        change_channel[0]++;
+        change_channel[1]++;
 
-        if(change_channel[0] >= 5 || change_channel[1] >= 5){
-          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
-          for (int i = 0; i < 2; i++){
-            change_channel[i] = 0;
-          }
+        if(change_channel[0] + change_channel[1] >= 6){
+          printf("Jamming detected by message shortage:");
+          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle));
+          change_channel[0] = 0;
+          change_channel[1] = 0;
         }
+        etimer_reset(&et);
     }
 
     PROCESS_END();
@@ -163,16 +146,14 @@ PROCESS_THREAD(hello_world_process, ev, data)
 PROCESS_THREAD(moveing_average_process, ev, data)
 {
   PROCESS_BEGIN();
-  
-
-  NETSTACK_RADIO.on();
   static radio_value_t RSSI;
   static struct etimer et;
 
   etimer_set(&et,0.1*CLOCK_SECOND);
 
+  static const float percentage = 1.1;
   static int mavg_short = 20;
-  static int mavg_long = 40;
+  static int mavg_long = 60;
   
   static int short_average_index = 0;
   static int short_average_array[20] = {0};
@@ -180,25 +161,31 @@ PROCESS_THREAD(moveing_average_process, ev, data)
   static int short_average = 0;
 
   static int long_average_index = 1;
-  static int long_average_array[40] = {0};
+  static int long_average_array[60] = {0};
   static int long_total = 0;
   static int long_average = 0;
 
   static int fill = 0;
+  static bool reset = true;
 
-  while(fill < mavg_long){
-        if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
-        {
-            printf("failed get RSSI value");
-        }
-        long_average_array[fill] = RSSI;
-        short_average_array[fill%20] = RSSI;
-        fill++;
-  }
-
+  
 
   while (1)
   {
+    if(reset){
+      while(fill < mavg_long){
+            if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
+            {
+                printf("failed get RSSI value");
+            }
+            long_average_array[fill] = RSSI;
+            short_average_array[fill%20] = RSSI;
+            fill++;
+      }
+      fill = 0;
+      reset = false;
+    }
+
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
     if(NETSTACK_RADIO.get_value(RADIO_PARAM_RSSI, &RSSI) != RADIO_RESULT_OK) 
         {
@@ -231,34 +218,18 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     }
     short_average_index++;
 
-    //printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
+    printf("RSSI,%d\n", RSSI);
+    printf("RSSI short,%d\n", short_average);
+    printf("RSSI long,%d\n", long_average);
     
-    if( short_average *1.1 > long_average){
-          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle, 4));
-          printf("changed to channel 17 because of RSSI\n");
-        
+    if( short_average * percentage > long_average){
+          printf("Jamming detected by RSSI:");
+          NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle)); 
+          reset = true;
     }
-
-/* Update all energest times. */
-    energest_flush();
-
-    printf("\nEnergest:\n");
-    printf(" CPU          %4lus LPM      %4lus DEEP LPM %4lus  Total time %lus\n",
-           to_seconds(energest_type_time(ENERGEST_TYPE_CPU)),
-           to_seconds(energest_type_time(ENERGEST_TYPE_LPM)),
-           to_seconds(energest_type_time(ENERGEST_TYPE_DEEP_LPM)),
-           to_seconds(ENERGEST_GET_TOTAL_TIME()));
-
-    printf(" Radio LISTEN %4lus TRANSMIT %4lus OFF      %4lus\n",
-           to_seconds(energest_type_time(ENERGEST_TYPE_LISTEN)),
-           to_seconds(energest_type_time(ENERGEST_TYPE_TRANSMIT)),
-           to_seconds(ENERGEST_GET_TOTAL_TIME()
-                      - energest_type_time(ENERGEST_TYPE_TRANSMIT)
-                      - energest_type_time(ENERGEST_TYPE_LISTEN)));
-
+    
     etimer_reset(&et); 
   }
-  
   
   PROCESS_END();
 }

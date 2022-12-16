@@ -41,14 +41,14 @@ AUTOSTART_PROCESSES(&jammer);
 /*---------------------------------------------------------------------------*/
 bool check_channel_activity(){
     int channel_activity = 0;
-    for (int i = 0; i < 25000; i++){
+    for (int i = 0; i < 10000; i++){
         NETSTACK_RADIO.on();
         channel_activity += NETSTACK_RADIO.channel_clear();     //returns 0 if channel is busy and 1 if its clear
         NETSTACK_RADIO.off();
     }
     printf("channel activity result: %d \n", channel_activity);
 
-    if(channel_activity != 25000){
+    if(channel_activity != 10000){
         printf("Activity found on channel %d! \n", current_channel);
         return true; 
     }

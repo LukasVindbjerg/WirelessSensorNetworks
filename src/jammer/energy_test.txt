@@ -1,0 +1,19 @@
+// on off in loop
+[INFO: Energest  ] --- Period summary #0 (151 seconds)
+[INFO: Energest  ] Total time  :    4960047
+[INFO: Energest  ] CPU         :    4928856/   4960047 (993 permil)
+[INFO: Energest  ] LPM         :      31191/   4960047 (6 permil)
+[INFO: Energest  ] Deep LPM    :          0/   4960047 (0 permil)
+[INFO: Energest  ] Radio Tx    :    2947197/   4960047 (594 permil)
+[INFO: Energest  ] Radio Rx    :    1823040/   4960047 (367 permil)
+[INFO: Energest  ] Radio total :    4770237/   4960047 (961 permil)
+
+// on off outside of loop
+[INFO: Energest  ] --- Period summary #0 (150 seconds)
+[INFO: Energest  ] Total time  :    4935037
+[INFO: Energest  ] CPU         :    4903852/   4935037 (993 permil)
+[INFO: Energest  ] LPM         :      31185/   4935037 (6 permil)
+[INFO: Energest  ] Deep LPM    :          0/   4935037 (0 permil)
+[INFO: Energest  ] Radio Tx    :    3186397/   4935037 (645 permil)
+[INFO: Energest  ] Radio Rx    :    1767477/   4935037 (358 permil)
+[INFO: Energest  ] Radio total :    4953874/   4935037 (1003 permil)
