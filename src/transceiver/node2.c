@@ -43,7 +43,7 @@ static int packet_recieved = 0;
 
 // Create a static variable to keep track of the current position in the array
 static int position = 0;
-static const int channel_cycle[4] = {11, 17, 18, 19};
+static const int channel_cycle[4] = {12, 17, 18, 19};
 
 
 /*---------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ int next_channel(const int *array){
 PROCESS_THREAD(hello_world_process, ev, data)
 {   
     PROCESS_BEGIN();
-    static int channel = 11;
+    static int channel = 12;
     NETSTACK_RADIO.on();
 
     //Connect to the desired channel
@@ -199,7 +199,6 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     }
 
     long_average = long_total/mavg_long;
-    long_total = 0;
 
     if(long_average_index == mavg_long){
       long_average_index = -1;
@@ -212,7 +211,7 @@ PROCESS_THREAD(moveing_average_process, ev, data)
       short_total += short_average_array[i];
     }
     short_average = short_total/mavg_short;
-    short_total = 0;
+    
 
     if(short_average_index == mavg_short){
       short_average_index = -1;
@@ -222,12 +221,15 @@ PROCESS_THREAD(moveing_average_process, ev, data)
     // printf("%d \t %d \t %d\n", RSSI, long_average, short_average);
 
     ctr++;
-    if (ctr == 10){
+    if (ctr == 1){
       printf("RSSI,%d\n", RSSI);
       printf("RSSI short,%d\n", short_average);
       printf("RSSI long,%d\n", long_average);
       ctr = 0;
     }
+    long_total = 0;
+    short_total = 0;
+
     if( short_average * percentage > long_average){
           printf("Jamming detected by RSSI:");
           NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, next_channel(channel_cycle)); 

@@ -1,19 +1,7 @@
 Starting jamming attack
-channel activity result: 9996 
-Activity found on channel 11! 
+channel activity result: 9993 
+Activity found on channel 12! 
 channel activity result: 10000 
-No activity found on channel 11. 
-channel activity result: 9994 
-Activity found on channel 17! 
-[INFO: Energest  ] --- Period summary #0 (61 seconds)
-[INFO: Energest  ] Total time  :    2003374
-[INFO: Energest  ] CPU         :    1225346/   2003374 (611 permil)
-[INFO: Energest  ] LPM         :     778028/   2003374 (388 permil)
-[INFO: Energest  ] Deep LPM    :          0/   2003374 (0 permil)
-[INFO: Energest  ] Radio Tx    :     501316/   2003374 (250 permil)
-[INFO: Energest  ] Radio Rx    :     497475/   2003374 (248 permil)
-[INFO: Energest  ] Radio total :     998791/   2003374 (498 permil)
-channel activity result: 10000 
-No activity found on channel 17. 
-channel activity result: 9994 
-Activity found on channel 18! 
+No activity found on channel 12. 
+channel activity result: 9999 
+Activity found on channel 17!

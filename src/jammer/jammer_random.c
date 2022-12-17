@@ -30,7 +30,7 @@
 #define JAMMER_PACKET_LEN 120
 
 
-static int current_channel = 11;
+static int current_channel = 12;
 
 typedef struct{
      char data[JAMMER_PACKET_LEN];
@@ -120,10 +120,10 @@ PROCESS_THREAD(jammer, ev, data)
             // Cycle to next current_channel
             // current_channel = (current_channel >= 26) ? 11 : current_channel++;
             if (current_channel >= 25) {
-                current_channel = 11;
+                current_channel = 12;
             } else {
                 current_channel++;
-                if(current_channel == 12) { current_channel = 17;}
+                if(current_channel == 13) { current_channel = 17;}
             }
             cc2420_set_channel(current_channel);
             // Start loop again
